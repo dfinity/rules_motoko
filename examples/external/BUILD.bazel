@@ -1,0 +1,27 @@
+load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "motoko_library", "motoko_test")
+
+motoko_library(
+    name = "base",
+    srcs = ["@motoko_base//:sources"],
+)
+
+motoko_library(
+    name = "sha",
+    srcs = ["@motoko_sha//:sources"],
+    deps = [":base"],
+)
+
+motoko_binary(
+    name = "sha256_canister",
+    entry = "Actor.mo",
+    deps = [":sha"],
+)
+
+motoko_test(
+    name = "sha_test",
+    entry = "Test.mo",
+    deps = [
+        ":base",
+        ":sha",
+    ],
+)

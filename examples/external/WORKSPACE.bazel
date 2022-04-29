@@ -1,0 +1,30 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "motoko_base",
+    build_file_content = """
+filegroup(name = "sources", srcs = glob(["*.mo"]), visibility = ["//visibility:public"])
+      """,
+    sha256 = "582d1c90faa65047354ae7530f09160dd7e04882991287ced7ea7a72bd89d06e",
+    strip_prefix = "motoko-base-moc-0.6.24/src",
+    urls = ["https://github.com/dfinity/motoko-base/archive/refs/tags/moc-0.6.24.zip"],
+)
+
+http_archive(
+    name = "motoko_sha",
+    build_file_content = """
+filegroup(name = "sources", srcs = glob(["*.mo"]), visibility = ["//visibility:public"])
+        """,
+    sha256 = "38bf0d103bb6969e6061aa0aa349751c2b73591c8725f312c145c53fdea1c810",
+    strip_prefix = "motoko-sha-9e2468f51ef060ae04fde8d573183191bda30189/src",
+    urls = ["https://github.com/enzoh/motoko-sha/archive/9e2468f51ef060ae04fde8d573183191bda30189.zip"],
+)
+
+local_repository(
+    name = "rules_motoko",
+    path = "../../",
+)
+
+load("@rules_motoko//motoko:repositories.bzl", "rules_motoko_dependencies")
+
+rules_motoko_dependencies()
