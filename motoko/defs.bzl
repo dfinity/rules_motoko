@@ -47,7 +47,6 @@ def _collect_aliases(ctx):
     for dep in ctx.attr.deps:
         alias_info = dep[MotokoAliasesInfo]
         for (alias, path) in alias_info.aliases:
-            print(alias, path)
             if alias not in visited:
                 args += ["--package", alias, path]
                 visited[alias] = path
