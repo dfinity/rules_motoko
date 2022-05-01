@@ -1,3 +1,6 @@
+load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+
 MO_FILETYPES = [".mo"]
 
 MotokoActorInfo = provider(
@@ -23,23 +26,48 @@ MotokoAliasesInfo = provider(
     },
 )
 
-def _dirname(p):
-    """Returns the dirname of a path.
-    The dirname is the portion of `p` up to but not including the file portion
-    (i.e., the basename). Any slashes immediately preceding the basename are not
-    included, unless omitting them would make the dirname empty.
+def _common_prefix(l, r):
+    if l == r:
+        return l
+
+    m = min(len(l), len(r))
+    p = m
+    for i in range(0, m):
+        if l[i] != r[i]:
+            p = i
+            break
+
+    p = l[0:p].rfind("/")
+    if p < 0:
+        return ""
+    return l[0:p].rstrip("/")
+
+def _longest_common_dirname(ps):
+    """Returns a path that is the longest common prefix of a sequence of paths.
     Args:
-      p: The path whose dirname should be returned.
+      ps: A sequence of paths.
     Returns:
-      The dirname of the path.
+      The longest common prefix.
     """
-    prefix, sep, _ = p.rpartition("/")
-    if not prefix:
-        return sep
-    else:
-        # If there are multiple consecutive slashes, strip them all out as Python's
-        # os.path.dirname does.
-        return prefix.rstrip("/")
+    if not ps:
+        return ""
+    lcd = paths.dirname(ps[0])
+    for p in ps:
+        lcd = _common_prefix(lcd, paths.dirname(p))
+    return lcd
+
+def _lcd_test_impl(ctx):
+    env = unittest.begin(ctx)
+    asserts.equals(env, "", _longest_common_dirname([]))
+    asserts.equals(env, "a/b", _longest_common_dirname(["a/b/c.mo", "a/b/d.mo"]))
+    asserts.equals(env, "a", _longest_common_dirname(["a/b/c.mo", "a/c/d.mo"]))
+    asserts.equals(env, "", _longest_common_dirname(["a/b/c.mo", "b/c/d.mo"]))
+    return unittest.end(env)
+
+lcd_test = unittest.make(_lcd_test_impl)
+
+def lcd_test_suite(name):
+    unittest.suite(name, lcd_test)
 
 def _collect_aliases(ctx):
     args = []
@@ -78,7 +106,7 @@ def _motoko_library_impl(ctx):
     args.append("--check")
     args += [f.path for f in ctx.files.srcs]
 
-    path = _dirname(ctx.files.srcs[0].path)
+    path = _longest_common_dirname([src.path for src in ctx.files.srcs])
 
     alias = ctx.label.name
     if ctx.attr.package:

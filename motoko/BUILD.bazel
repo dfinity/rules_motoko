@@ -1,0 +1,3 @@
+load(":defs.bzl", "lcd_test_suite")
+
+lcd_test_suite("lcd_test")
