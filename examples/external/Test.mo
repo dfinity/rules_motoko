@@ -8,6 +8,7 @@
  */
 
 import Array "mo:base/Array";
+import Debug "mo:base/Debug";
 import SHA256 "mo:sha/SHA256";
 
 type Test = {
@@ -501,11 +502,18 @@ let tests = [
 ];
 
 func eq(a : Nat8, b : Nat8) : Bool {
-  return a == b;
+  return a != b;
 };
 
 for (test in tests.vals()) {
   let expect = test.expect;
   let actual = SHA256.sha256(test.data);
-  assert(Array.equal<Nat8>(expect, actual, eq));
+  if (not Array.equal<Nat8>(expect, actual, eq)) {
+    Debug.print(
+      "Expected the hash of " # debug_show(test.data) #
+      " to be " # debug_show(test.expect) #
+      ", got: " # debug_show(actual)
+    );
+    assert false;
+  }
 };

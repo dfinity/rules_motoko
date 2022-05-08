@@ -21,29 +21,31 @@ MotokoPackageInfo = provider(
 )
 
 MotokoAliasesInfo = provider(
+    doc = "A collection of Motoko package aliases.",
     fields = {
         "aliases": "[(string, string)]: list package aliases",
     },
 )
 
-def _common_prefix(l, r):
-    if l == r:
-        return l
+def _common_prefix(lhs, rhs):
+    if lhs == rhs:
+        return lhs
 
-    m = min(len(l), len(r))
+    m = min(len(lhs), len(rhs))
     p = m
     for i in range(0, m):
-        if l[i] != r[i]:
+        if lhs[i] != rhs[i]:
             p = i
             break
 
-    p = l[0:p].rfind("/")
+    p = lhs[0:p].rfind("/")
     if p < 0:
         return ""
-    return l[0:p].rstrip("/")
+    return lhs[0:p].rstrip("/")
 
 def _longest_common_dirname(ps):
     """Returns a path that is the longest common prefix of a sequence of paths.
+
     Args:
       ps: A sequence of paths.
     Returns:
@@ -176,7 +178,7 @@ MOC = attr.label(
     default = Label("@build_bazel_rules_motoko_toolchain//:moc"),
     executable = True,
     allow_single_file = True,
-    cfg = "host",
+    cfg = "exec",
 )
 
 COMMON_ATTRS = {
