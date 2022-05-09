@@ -28,10 +28,5 @@ jobs:
 
     - name: Build and test examples
       run: |
-        for example in examples/*; do
-            pushd $example
-            "${GITHUB_WORKSPACE}/bin/bazel" build //...
-            "${GITHUB_WORKSPACE}/bin/bazel" test //...
-            popd
-        done
+        cd examples
         "${GITHUB_WORKSPACE}/bin/bazel" test //...
