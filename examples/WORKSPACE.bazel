@@ -22,7 +22,7 @@ filegroup(name = "sources", srcs = glob(["*.mo"]), visibility = ["//visibility:p
 
 local_repository(
     name = "rules_motoko",
-    path = "../../",
+    path = "../",
 )
 
 load("@rules_motoko//motoko:repositories.bzl", "rules_motoko_dependencies")

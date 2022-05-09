@@ -6,7 +6,9 @@ MO_FILETYPES = [".mo"]
 MotokoActorInfo = provider(
     doc = "Provides information about an IC actor.",
     fields = {
+        "name": "string: name of the actor.",
         "wasm": "File: WebAssembly binary of an actor.",
+        "principal": "string: principal of the canister.",
         "didl": "File: Candid interface of an actor.",
     },
 )
@@ -71,7 +73,7 @@ lcd_test = unittest.make(_lcd_test_impl)
 def lcd_test_suite(name):
     unittest.suite(name, lcd_test)
 
-def _collect_aliases(ctx):
+def _collect_package_aliases(ctx):
     args = []
     visited = {}
     for dep in ctx.attr.deps:
@@ -85,9 +87,47 @@ def _collect_aliases(ctx):
 
     return args
 
+def _collect_actor_aliases(ctx):
+    args = []
+    didls = []
+    seen_actors = {}
+    for dep in ctx.attr.deps:
+        if MotokoActorInfo in dep:
+            actor_info = dep[MotokoActorInfo]
+            if not actor_info.principal:
+                continue
+            if actor_info.name in seen_actors:
+                prev_principal = seen_actors[actor_info.name]
+                if prev_principal != actor_info.principal:
+                    fail("conflicting actor aliases: %s can be either %s or %s" % (actor_info.name, prev_principal, actor_info.principal))
+            else:
+                args += ["--actor-alias", actor_info.name, actor_info.principal]
+                didls.append((actor_info.principal, actor_info.didl))
+                seen_actors[actor_info.name] = actor_info.principal
+
+    extra_outputs = []
+    if didls:
+        idl_path = ctx.actions.declare_directory("actor_idl_path")
+        cp_cmd = ["mkdir", "-p", idl_path.path]
+        for (alias, idl) in didls:
+            cp_cmd += ["&&", "cp", idl.path, "%s/%s.did" % (idl_path.path, alias)]
+
+        ctx.actions.run_shell(
+            mnemonic = "CopyIdlFiles",
+            command = " ".join(cp_cmd),
+            inputs = [f for (_, f) in didls],
+            outputs = [idl_path],
+        )
+
+        args += ["--actor-idl", idl_path.path]
+
+        extra_outputs = [idl_path]
+
+    return (args, extra_outputs)
+
 def _motoko_package_aspect_impl(target, ctx):
     if MotokoPackageInfo not in target:
-        return None
+        return MotokoAliasesInfo(aliases = [])
 
     pkg_info = target[MotokoPackageInfo]
     aliases = [(pkg_info.alias, pkg_info.path)]
@@ -103,7 +143,7 @@ motoko_package_aspect = aspect(
 )
 
 def _motoko_library_impl(ctx):
-    args = _collect_aliases(ctx)
+    args = _collect_package_aliases(ctx)
 
     args.append("--check")
     args += [f.path for f in ctx.files.srcs]
@@ -144,7 +184,7 @@ def _motoko_library_impl(ctx):
     ]
 
 def _motoko_binary_impl(ctx):
-    pkg_args = _collect_aliases(ctx)
+    pkg_args = _collect_package_aliases(ctx)
 
     moc = ctx.executable._moc
     out_wasm = ctx.actions.declare_file(ctx.label.name + ".wasm")
@@ -154,15 +194,18 @@ def _motoko_binary_impl(ctx):
     args.add_all(pkg_args)
     args.add_all(["-o", out_wasm.path, "--idl", ctx.file.entry.path])
 
+    actor_args, extra_outputs = _collect_actor_aliases(ctx)
+    args.add_all(actor_args)
+
     files = depset(
         direct = ctx.files.srcs + [ctx.file.entry],
-        transitive = [dep[MotokoPackageInfo].files for dep in ctx.attr.deps],
+        transitive = [dep[MotokoPackageInfo].files for dep in ctx.attr.deps if MotokoPackageInfo in dep],
     )
 
     ctx.actions.run(
         executable = moc,
         arguments = [args],
-        inputs = files.to_list(),
+        inputs = files.to_list() + extra_outputs,
         outputs = [out_wasm, out_didl],
         tools = [moc],
         mnemonic = "MotokoCompile",
@@ -170,8 +213,13 @@ def _motoko_binary_impl(ctx):
     )
 
     return [
-        MotokoActorInfo(wasm = out_wasm, didl = out_didl),
-        DefaultInfo(files = depset([out_wasm, out_didl])),
+        MotokoActorInfo(
+            name = ctx.label.name,
+            wasm = out_wasm,
+            didl = out_didl,
+            principal = ctx.attr.principal,
+        ),
+        DefaultInfo(files = depset([out_wasm, out_didl] + extra_outputs)),
     ]
 
 MOC = attr.label(
@@ -193,12 +241,14 @@ BIN_ATTRS = dict(COMMON_ATTRS.items() + {
 
 motoko_binary = rule(
     implementation = _motoko_binary_impl,
-    attrs = BIN_ATTRS,
+    attrs = dict(BIN_ATTRS.items() + {
+        "principal": attr.string(doc = "Actor principal."),
+    }.items()),
     provides = [MotokoActorInfo, DefaultInfo],
 )
 
 def _motoko_test_impl(ctx):
-    args = _collect_aliases(ctx)
+    args = _collect_package_aliases(ctx)
 
     moc = ctx.executable._moc
 

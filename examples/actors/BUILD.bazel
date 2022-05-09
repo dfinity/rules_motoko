@@ -1,0 +1,19 @@
+load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "motoko_library")
+
+motoko_library(
+    name = "base",
+    srcs = ["@motoko_base//:sources"],
+)
+
+motoko_binary(
+    name = "pub",
+    entry = "Pub.mo",
+    principal = "ryjl3-tyaaa-aaaaa-aaaba-cai",
+    deps = [":base"],
+)
+
+motoko_binary(
+    name = "sub",
+    entry = "Sub.mo",
+    deps = [":pub"],
+)

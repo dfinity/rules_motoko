@@ -502,7 +502,7 @@ let tests = [
 ];
 
 func eq(a : Nat8, b : Nat8) : Bool {
-  return a != b;
+  return a == b;
 };
 
 for (test in tests.vals()) {
