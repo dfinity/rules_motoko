@@ -1,0 +1,13 @@
+load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "external_actor")
+
+external_actor(
+    name = "icp_ledger",
+    principal = "ryjl3-tyaaa-aaaaa-aaaba-cai",
+    idl = "ledger.did",
+)
+
+motoko_binary(
+    name = "ledger_client",
+    entry = "main.mo",
+    deps = [":icp_ledger"],
+)
