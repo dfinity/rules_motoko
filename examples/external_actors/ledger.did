@@ -1,0 +1,10 @@
+service : {
+  // Returns token symbol.
+  symbol : () -> (record { symbol: text }) query;
+
+  // Returns token name.
+  name : () -> (record { name: text }) query;
+
+  // Returns token decimals.
+  decimals : () -> (record { decimals: nat32 }) query;
+}

@@ -9,7 +9,7 @@ MotokoActorInfo = provider(
         "name": "string: name of the actor.",
         "wasm": "File: WebAssembly binary of an actor.",
         "principal": "string: principal of the canister.",
-        "didl": "File: Candid interface of an actor.",
+        "idl": "File: Candid interface of an actor.",
     },
 )
 
@@ -102,7 +102,7 @@ def _collect_actor_aliases(ctx):
                     fail("conflicting actor aliases: %s can be either %s or %s" % (actor_info.name, prev_principal, actor_info.principal))
             else:
                 args += ["--actor-alias", actor_info.name, actor_info.principal]
-                didls.append((actor_info.principal, actor_info.didl))
+                didls.append((actor_info.principal, actor_info.idl))
                 seen_actors[actor_info.name] = actor_info.principal
 
     extra_outputs = []
@@ -187,8 +187,12 @@ def _motoko_binary_impl(ctx):
     pkg_args = _collect_package_aliases(ctx)
 
     moc = ctx.executable._moc
-    out_wasm = ctx.actions.declare_file(ctx.label.name + ".wasm")
-    out_didl = ctx.actions.declare_file(ctx.label.name + ".did")
+    out_wasm = ctx.outputs.wasm_out
+    out_didl = ctx.outputs.idl_out
+    if not out_wasm:
+        out_wasm = ctx.actions.declare_file(ctx.label.name + ".wasm")
+    if not out_didl:
+        out_didl = ctx.actions.declare_file(ctx.label.name + ".did")
 
     args = ctx.actions.args()
     args.add_all(pkg_args)
@@ -216,10 +220,12 @@ def _motoko_binary_impl(ctx):
         MotokoActorInfo(
             name = ctx.label.name,
             wasm = out_wasm,
-            didl = out_didl,
+            idl = out_didl,
             principal = ctx.attr.principal,
         ),
-        DefaultInfo(files = depset([out_wasm, out_didl] + extra_outputs)),
+        DefaultInfo(
+            files = depset([out_wasm, out_didl] + extra_outputs),
+        ),
     ]
 
 MOC = attr.label(
@@ -243,6 +249,8 @@ motoko_binary = rule(
     implementation = _motoko_binary_impl,
     attrs = dict(BIN_ATTRS.items() + {
         "principal": attr.string(doc = "Actor principal."),
+        "wasm_out": attr.output(doc = "Name of the generated actor Wasm file."),
+        "idl_out": attr.output(doc = "Name of the generated actor did file."),
     }.items()),
     provides = [MotokoActorInfo, DefaultInfo],
 )
@@ -276,4 +284,22 @@ motoko_library = rule(
     attrs = dict(COMMON_ATTRS.items() + {
         "package": attr.string(doc = "string: Package alias; if not specified, it's the same as the rule's label."),
     }.items()),
+)
+
+def _external_actor_impl(ctx):
+    return [
+        MotokoActorInfo(
+            name = ctx.label.name,
+            principal = ctx.attr.principal,
+            wasm = None,
+            idl = ctx.file.idl,
+        )
+    ]
+
+external_actor = rule(
+    implementation = _external_actor_impl,
+    attrs = {
+        "principal": attr.string(doc = "Actor principal."),
+        "idl": attr.label(doc = "Actor interface file.", allow_single_file = True),
+    },
 )

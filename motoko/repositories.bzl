@@ -11,13 +11,13 @@ def _moc_impl(repository_ctx):
     os_name = repository_ctx.os.name
     if os_name == "linux":
         repository_ctx.download_and_extract(
-            url = "https://github.com/dfinity/motoko/releases/download/0.6.25/motoko-linux64-0.6.25.tar.gz",
-            sha256 = "9bfe7ca3c179c11af5ab7f2fab980abcfcaefb927f86e6b539d240d9385d24a8",
+            url = "https://github.com/dfinity/motoko/releases/download/0.8.5/motoko-linux64-0.8.5.tar.gz",
+            sha256 = "a48da001e85077fea41029bebe4ec30b2dd9f4e31039b54852270a48f41f084f",
         )
     elif os_name == "mac os x":
         repository_ctx.download_and_extract(
-            url = "https://github.com/dfinity/motoko/releases/download/0.6.25/motoko-macos-0.6.25.tar.gz",
-            sha256 = "ea3bdd1d3b8410ee9442bcc3508381e568c86a96ee8a1aa82870e479ece48f05",
+            url = "https://github.com/dfinity/motoko/releases/download/0.8.5/motoko-macos-0.8.5.tar.gz",
+            sha256 = "ab9c78b0c8d96ed9b6a1618c5643d1d9829e4716db58ee875c461ba0444d17ef",
         )
     else:
         fail("Unsupported operating system: " + os_name)
