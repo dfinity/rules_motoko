@@ -27,4 +27,4 @@ local_repository(
 
 load("@rules_motoko//motoko:repositories.bzl", "rules_motoko_dependencies")
 
-rules_motoko_dependencies()
+rules_motoko_dependencies(motoko_version = "0.8.7")

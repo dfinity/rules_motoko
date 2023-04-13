@@ -1,5 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load("//motoko:versions.bzl", "MOC")
 
 MOC_BUILD = """
 package(default_visibility = ["//visibility:public"])
@@ -9,28 +10,30 @@ exports_files(["moc", "mo-doc"])
 
 def _moc_impl(repository_ctx):
     os_name = repository_ctx.os.name
-    if os_name == "linux":
-        repository_ctx.download_and_extract(
-            url = "https://github.com/dfinity/motoko/releases/download/0.8.5/motoko-linux64-0.8.5.tar.gz",
-            sha256 = "a48da001e85077fea41029bebe4ec30b2dd9f4e31039b54852270a48f41f084f",
-        )
-    elif os_name == "mac os x":
-        repository_ctx.download_and_extract(
-            url = "https://github.com/dfinity/motoko/releases/download/0.8.5/motoko-macos-0.8.5.tar.gz",
-            sha256 = "ab9c78b0c8d96ed9b6a1618c5643d1d9829e4716db58ee875c461ba0444d17ef",
-        )
-    else:
+    if os_name not in MOC:
         fail("Unsupported operating system: " + os_name)
 
+    v = repository_ctx.attr.motoko_version
+    moc_versions = MOC[os_name]
+    if v not in moc_versions:
+        fail("Unsupported motoko version: " + v)
+    asset = moc_versions[v]
+
+    repository_ctx.download_and_extract(
+        url = asset["url"],
+        sha256 = asset["sha256"],
+    )
     repository_ctx.file("BUILD.bazel", MOC_BUILD, executable = False)
 
 _moc = repository_rule(
     implementation = _moc_impl,
-    attrs = {},
+    attrs = {
+        "motoko_version": attr.string(doc = "The motoko compiler version."),
+    },
 )
 
-def rules_motoko_dependencies():
-    _moc(name = "build_bazel_rules_motoko_toolchain")
+def rules_motoko_dependencies(motoko_version):
+    _moc(name = "build_bazel_rules_motoko_toolchain", motoko_version = motoko_version)
     maybe(
         http_archive,
         name = "bazel_skylib",
