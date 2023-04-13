@@ -8,6 +8,8 @@ package(default_visibility = ["//visibility:public"])
 exports_files(["moc", "mo-doc"])
 """
 
+DEFAULT_VERSION = "0.8.7"
+
 def _moc_impl(repository_ctx):
     os_name = repository_ctx.os.name
     if os_name not in MOC:
@@ -28,11 +30,11 @@ def _moc_impl(repository_ctx):
 _moc = repository_rule(
     implementation = _moc_impl,
     attrs = {
-        "motoko_version": attr.string(doc = "The motoko compiler version."),
+        "motoko_version": attr.string(doc = "The motoko compiler version.", default = DEFAULT_VERSION),
     },
 )
 
-def rules_motoko_dependencies(motoko_version):
+def rules_motoko_dependencies(motoko_version = DEFAULT_VERSION):
     _moc(name = "build_bazel_rules_motoko_toolchain", motoko_version = motoko_version)
     maybe(
         http_archive,
