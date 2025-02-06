@@ -8,7 +8,7 @@ package(default_visibility = ["//visibility:public"])
 exports_files(["moc", "mo-doc"])
 """
 
-DEFAULT_VERSION = "0.8.7"
+DEFAULT_VERSION = "0.14.0"
 
 def _moc_impl(repository_ctx):
     os_name = repository_ctx.os.name
