@@ -1,3 +1,5 @@
+"""Repository setup for rules_motoko (WORKSPACE macro and helpers)."""
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//motoko:versions.bzl", "MOC")
@@ -45,3 +47,15 @@ def rules_motoko_dependencies(motoko_version = DEFAULT_VERSION):
             "https://github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
         ],
     )
+
+# Minimal public helper for bzlmod: creates the Motoko toolchain repository with a stable name.
+def motoko_register_toolchains(motoko_version = DEFAULT_VERSION):
+    """Creates the Motoko toolchain repository used by rules_motoko.
+
+    This mirrors the behavior of rules_motoko_dependencies but only sets up the
+    toolchain repo (no third-party deps). Intended for use from a module extension.
+
+    Args:
+        motoko_version: The Motoko compiler version to download.
+    """
+    _moc(name = "build_bazel_rules_motoko_toolchain", motoko_version = motoko_version)
