@@ -1,0 +1,19 @@
+"""Bazel module for the examples in rules_motoko."""
+
+module(
+    name = "rules_motoko_examples",
+    compatibility_level = 1,
+    bazel_compatibility = [
+        ">=6.0.0",
+        "<8.0.0",
+    ],
+)
+
+# Use the rules from the parent repo via a local path override.
+# When consuming a released version, replace with a normal bazel_dep and drop the override.
+bazel_dep(name = "rules_motoko", version = "0.0.0")
+local_path_override(module_name = "rules_motoko", path = "..")
+
+# Bring in third-party Motoko libraries used by examples via a local module extension.
+examples_deps = use_extension("//:examples_deps.bzl", "examples_deps")
+use_repo(examples_deps, "motoko_base", "motoko_sha")

@@ -13,3 +13,9 @@ module(
 
 # Dependencies needed to build this repository. Consumers don't need to declare these explicitly.
 bazel_dep(name = "bazel_skylib", version = "1.2.1")
+
+# Create and map the Motoko toolchain repo for this ruleset so labels
+# like @build_bazel_rules_motoko_toolchain resolve when consumed via bzlmod.
+motoko = use_extension("//motoko:extensions.bzl", "motoko")
+motoko.toolchain()  # use default version
+use_repo(motoko, "build_bazel_rules_motoko_toolchain")
