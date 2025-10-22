@@ -1,4 +1,4 @@
-import Array "mo:base/Array";
+import Buffer "mo:base/Buffer";
 
 actor Publisher {
 
@@ -12,10 +12,10 @@ actor Publisher {
     callback : shared Counter -> ();
   };
 
-  var subscribers : [Subscriber] = [];
+  var subscribers : Buffer.Buffer<Subscriber> = Buffer.Buffer<Subscriber>(0);
 
   public func subscribe(subscriber : Subscriber) {
-    subscribers := Array.append<Subscriber>(subscribers, [subscriber]);
+    subscribers.add(subscriber);
   };
 
   public func publish(counter : Counter) {

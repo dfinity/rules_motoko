@@ -7,7 +7,7 @@ module(
     # Tested with Bazel 6 and 7. Adjust upper bound when Bazel 8 is released and verified.
     bazel_compatibility = [
         ">=6.0.0",
-        "<8.0.0",
+        "<9.0.0",
     ],
 )
 
