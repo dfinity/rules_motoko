@@ -123,7 +123,7 @@
     },
     "@@rules_motoko~//motoko:extensions.bzl%motoko": {
       "general": {
-        "bzlTransitiveDigest": "yhndz9lnJ2P1jDr1JFnczFrMGCcEZUNDrg3ABEoi+Fo=",
+        "bzlTransitiveDigest": "ootRuYYSovGp3TH2YUG3tUQ/Uz8YelNEL+XTjDjv+I0=",
         "usagesDigest": "fEf7LsTP9mbW5HScYV2O+MrVX+0vGLQ4AABmjKtXSGI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -137,13 +137,7 @@
             }
           }
         },
-        "recordedRepoMappingEntries": [
-          [
-            "rules_motoko~",
-            "bazel_tools",
-            "bazel_tools"
-          ]
-        ]
+        "recordedRepoMappingEntries": []
       }
     }
   }

@@ -28,18 +28,3 @@ load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "motoko_library", "motok
 Notes:
 - Bazel 6 requires `--enable_bzlmod`; Bazel 7 enables bzlmod by default.
 - Third-party Motoko libraries you previously fetched via `http_archive` in WORKSPACE should be migrated via your own module extension(s) or replaced with proper Bazel modules when available.
-
-## Legacy (WORKSPACE) setup
-
-If you aren't on bzlmod yet, you can still set up the toolchain and dependencies via a WORKSPACE macro:
-
-```
-load("@rules_motoko//motoko:repositories.bzl", "rules_motoko_dependencies")
-rules_motoko_dependencies(motoko_version = "0.8.7")
-```
-
-Then load the rules in your BUILD files:
-
-```
-load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "motoko_library", "motoko_test")
-```

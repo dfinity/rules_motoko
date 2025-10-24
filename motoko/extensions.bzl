@@ -4,7 +4,7 @@ This provides an extension that sets up the Motoko toolchain repository
 so users don't need to write WORKSPACE code when using Bazel modules.
 """
 
-load("//motoko:repositories.bzl", "DEFAULT_VERSION", "motoko_register_toolchains")
+load("//motoko:repositories.bzl", "DEFAULT_VERSION", "motoko_register_toolchain")
 
 # Users invoke from their MODULE.bazel like:
 #   motoko = use_extension("@rules_motoko//motoko:extensions.bzl", "motoko")
@@ -21,7 +21,7 @@ def _motoko_ext_impl(module_ctx):
 
     # Create the toolchain repo with a stable, well-known name
     # so existing labels like @build_bazel_rules_motoko_toolchain continue to work.
-    motoko_register_toolchains(motoko_version = version)
+    motoko_register_toolchain(motoko_version = version)
 
 motoko = module_extension(
     implementation = _motoko_ext_impl,
