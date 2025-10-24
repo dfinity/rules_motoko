@@ -2,17 +2,10 @@
 
 module(
     name = "rules_motoko",
-    # Increase when making breaking Starlark changes.
-    compatibility_level = 1,
-    # Tested with Bazel 6 and 7. Adjust upper bound when Bazel 8 is released and verified.
-    bazel_compatibility = [
-        ">=6.0.0",
-        "<9.0.0",
-    ],
+    version = "1.0.0",
 )
 
-# Dependencies needed to build this repository. Consumers don't need to declare these explicitly.
-bazel_dep(name = "bazel_skylib", version = "1.2.1")
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
 
 # Create and map the Motoko toolchain repo for this ruleset so labels
 # like @build_bazel_rules_motoko_toolchain resolve when consumed via bzlmod.
