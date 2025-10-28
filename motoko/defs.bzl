@@ -267,7 +267,15 @@ def _motoko_test_impl(ctx):
     # and are expected not to contain spaces.
     joined_args = " ".join(args)
 
-    script = "{moc_path} {joined_args} -r $RUNFILES_DIR/$TEST_WORKSPACE/{entry_runfile}".format(
+    script = """
+#!/bin/bash
+set -e
+# The following is to work around a weird behavior in bazel >= 8 where the test workspace does not have an "external" directory.
+# Without it the joined_args (like --package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha)
+# will fail to resolve.
+if [ ! -d external ]; then ln -s .. external; fi
+{moc_path} {joined_args} -r {entry_runfile}
+    """.format(
         moc_path = moc_path,
         entry_runfile = entry_runfile,
         joined_args = joined_args,
