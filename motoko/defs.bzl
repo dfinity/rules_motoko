@@ -260,13 +260,6 @@ def _motoko_test_impl(ctx):
 
     moc = ctx.executable._moc
 
-    moc_path = moc.short_path
-    entry_runfile = ctx.file.entry.short_path
-
-    # Join args as a shell-safe literal; paths produced by these rules are runfile/execution-root relative
-    # and are expected not to contain spaces.
-    joined_args = " ".join(args)
-
     script = """
 #!/bin/bash
 set -e
@@ -276,9 +269,9 @@ set -e
 if [ ! -d external ]; then ln -s .. external; fi
 {moc_path} {joined_args} -r {entry_runfile}
     """.format(
-        moc_path = moc_path,
-        entry_runfile = entry_runfile,
-        joined_args = joined_args,
+        moc_path = moc.short_path,
+        entry_runfile = ctx.file.entry.short_path,
+        joined_args = " ".join(args),
     )
 
     ctx.actions.write(output = ctx.outputs.executable, content = script, is_executable = True)
