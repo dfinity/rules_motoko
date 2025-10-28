@@ -229,7 +229,7 @@ def _motoko_binary_impl(ctx):
     ]
 
 MOC = attr.label(
-    default = Label("@build_bazel_rules_motoko_toolchain//:moc"),
+    default = Label("@motoko_toolchain//:moc"),
     executable = True,
     allow_single_file = True,
     cfg = "exec",
@@ -260,9 +260,20 @@ def _motoko_test_impl(ctx):
 
     moc = ctx.executable._moc
 
-    script = " ".join([moc.path] + args + ["-r", ctx.file.entry.path])
+    moc_path = moc.short_path
+    entry_runfile = ctx.file.entry.short_path
 
-    ctx.actions.write(output = ctx.outputs.executable, content = script)
+    # Join args as a shell-safe literal; paths produced by these rules are runfile/execution-root relative
+    # and are expected not to contain spaces.
+    joined_args = " ".join(args)
+
+    script = "{moc_path} {joined_args} -r $RUNFILES_DIR/$TEST_WORKSPACE/{entry_runfile}".format(
+        moc_path = moc_path,
+        entry_runfile = entry_runfile,
+        joined_args = joined_args,
+    )
+
+    ctx.actions.write(output = ctx.outputs.executable, content = script, is_executable = True)
 
     files = depset(
         direct = ctx.files.srcs + [ctx.file.entry, moc],
@@ -293,7 +304,7 @@ def _external_actor_impl(ctx):
             principal = ctx.attr.principal,
             wasm = None,
             idl = ctx.file.idl,
-        )
+        ),
     ]
 
 external_actor = rule(

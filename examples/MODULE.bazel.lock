@@ -123,13 +123,13 @@
     },
     "@@rules_motoko~//motoko:extensions.bzl%motoko": {
       "general": {
-        "bzlTransitiveDigest": "ootRuYYSovGp3TH2YUG3tUQ/Uz8YelNEL+XTjDjv+I0=",
-        "usagesDigest": "fEf7LsTP9mbW5HScYV2O+MrVX+0vGLQ4AABmjKtXSGI=",
+        "bzlTransitiveDigest": "jrSe/leImh1kG0Gl2ZtdCi9Nv/dQjyv69Q5Iog2vkXQ=",
+        "usagesDigest": "IgCP7jb2uhMvGLBdiilr9MnygKCZaH4CjoY6/2B+rZg=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "build_bazel_rules_motoko_toolchain": {
+          "motoko_toolchain": {
             "bzlFile": "@@rules_motoko~//motoko:repositories.bzl",
             "ruleClassName": "_moc",
             "attributes": {
