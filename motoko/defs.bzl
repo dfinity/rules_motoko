@@ -267,11 +267,11 @@ set -e
 # Without it the joined_args (like --package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha)
 # will fail to resolve.
 if [ ! -d external ]; then ln -s .. external; fi
-{moc_path} {joined_args} -r {entry_runfile}
+{moc_path} {args} -r {entry_path}
     """.format(
         moc_path = moc.short_path,
-        entry_runfile = ctx.file.entry.short_path,
-        joined_args = " ".join(args),
+        entry_path = ctx.file.entry.short_path,
+        args = " ".join(args),
     )
 
     ctx.actions.write(output = ctx.outputs.executable, content = script, is_executable = True)
