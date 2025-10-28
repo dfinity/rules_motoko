@@ -262,11 +262,12 @@ def _motoko_test_impl(ctx):
 
     script = """
 #!/bin/bash
-set -e
-# The following is to work around a weird behavior in bazel >= 8 where the test workspace does not have an "external" directory.
-# Without it the `args` (like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha")
-# will fail to resolve.
-if [ ! -d external ]; then ln -s .. external; fi
+set -ex
+# Bazel-8 disabled (https://github.com/bazelbuild/bazel/issues/23574) the --legacy_external_runfiles flag.
+# See: https://bazel.build/versions/6.4.0/reference/command-line-reference#flag--legacy_external_runfiles
+# This means that the packages in `args` like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha"
+# will fail to resolve which is why we install a symlink from `external` to $RUNFILES_DIR in case `external` does not exists.
+if [ ! -d external ]; then ln -s "$RUNFILES_DIR" external; fi
 {moc_path} {args} -r {entry_path}
 """.format(
         moc_path = moc.short_path,
