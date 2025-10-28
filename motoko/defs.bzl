@@ -264,11 +264,11 @@ def _motoko_test_impl(ctx):
 #!/bin/bash
 set -e
 # The following is to work around a weird behavior in bazel >= 8 where the test workspace does not have an "external" directory.
-# Without it the joined_args (like --package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha)
+# Without it the `args` (like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha")
 # will fail to resolve.
 if [ ! -d external ]; then ln -s .. external; fi
 {moc_path} {args} -r {entry_path}
-    """.format(
+""".format(
         moc_path = moc.short_path,
         entry_path = ctx.file.entry.short_path,
         args = " ".join(args),
