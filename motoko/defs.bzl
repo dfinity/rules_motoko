@@ -148,7 +148,7 @@ def _motoko_library_impl(ctx):
     args.append("--check")
     args += [f.path for f in ctx.files.srcs]
 
-    path = _longest_common_dirname([src.short_path for src in ctx.files.srcs])
+    path = _longest_common_dirname([src.path for src in ctx.files.srcs])
 
     alias = ctx.label.name
     if ctx.attr.package:
@@ -260,7 +260,16 @@ def _motoko_test_impl(ctx):
 
     moc = ctx.executable._moc
 
-    script = "{moc_path} {args} -r {entry_path}".format(
+    script = """
+#!/bin/bash
+set -e
+# Bazel-8 disabled (https://github.com/bazelbuild/bazel/issues/23574) the --legacy_external_runfiles flag.
+# See: https://bazel.build/versions/7.6.0/reference/command-line-reference#flag--legacy_external_runfiles
+# This means that the packages in `args` like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha"
+# will fail to resolve which is why we install a symlink from `external` to $RUNFILES_DIR in case `external` does not exists.
+if [ ! -d external ]; then ln -s "$RUNFILES_DIR" external; fi
+{moc_path} {args} -r {entry_path}
+""".format(
         moc_path = moc.short_path,
         entry_path = ctx.file.entry.short_path,
         args = " ".join(args),
