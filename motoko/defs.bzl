@@ -262,7 +262,7 @@ def _motoko_test_impl(ctx):
 
     script = """
 #!/bin/bash
-set -ex
+set -e
 # Bazel-8 disabled (https://github.com/bazelbuild/bazel/issues/23574) the --legacy_external_runfiles flag.
 # See: https://bazel.build/versions/6.4.0/reference/command-line-reference#flag--legacy_external_runfiles
 # This means that the packages in `args` like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha"
