@@ -260,7 +260,11 @@ def _motoko_test_impl(ctx):
 
     moc = ctx.executable._moc
 
-    script = " ".join([moc.short_path] + args + ["-r", ctx.file.entry.short_path])
+    script = "{moc_path} {args} -r {entry_path}".format(
+        moc_path = moc.short_path,
+        entry_path = ctx.file.entry.short_path,
+        args = " ".join(args),
+    )
 
     ctx.actions.write(output = ctx.outputs.executable, content = script, is_executable = True)
 
