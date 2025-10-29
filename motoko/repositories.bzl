@@ -14,6 +14,8 @@ def _moc_impl(repository_ctx):
         fail("Unsupported operating system: " + os_name)
 
     arch = repository_ctx.os.arch
+    if arch == "x86_64":
+        arch = "amd64"
     if arch not in MOC[os_name]:
         fail("Unsupported architecture: " + arch + " for OS: " + os_name)
 
