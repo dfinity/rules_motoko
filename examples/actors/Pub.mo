@@ -1,6 +1,6 @@
 import Buffer "mo:base/Buffer";
 
-actor Publisher {
+persistent actor Publisher {
 
   type Counter = {
     topic : Text;
@@ -12,7 +12,7 @@ actor Publisher {
     callback : shared Counter -> ();
   };
 
-  var subscribers : Buffer.Buffer<Subscriber> = Buffer.Buffer<Subscriber>(0);
+  transient var subscribers : Buffer.Buffer<Subscriber> = Buffer.Buffer<Subscriber>(0);
 
   public func subscribe(subscriber : Subscriber) {
     subscribers.add(subscriber);

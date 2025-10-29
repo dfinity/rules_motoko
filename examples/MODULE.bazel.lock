@@ -138,7 +138,7 @@
   "moduleExtensions": {
     "//:examples_deps.bzl%examples_deps": {
       "general": {
-        "bzlTransitiveDigest": "zlPL6lWqylswu1wcUGAPutSjJbgkCzrJ1+LV2YEZSTA=",
+        "bzlTransitiveDigest": "+XgcnEuDQO08d1XUioTbNUtoQvshzx87GOVD5yKp6C8=",
         "usagesDigest": "yY1xgLhQq2p+TfWdNX5VfDU7JYqB+vRPWbBxh5QbZdo=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -148,10 +148,10 @@
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "build_file_content": "\nfilegroup(name = \"sources\", srcs = glob([\"*.mo\"]), visibility = [\"//visibility:public\"])\n",
-              "sha256": "582d1c90faa65047354ae7530f09160dd7e04882991287ced7ea7a72bd89d06e",
-              "strip_prefix": "motoko-base-moc-0.6.24/src",
+              "sha256": "cdb7abfb280bffec3fb0200032d1e5c6f094f209a68219d3c82ce886b2339147",
+              "strip_prefix": "motoko-base-moc-0.16.3/src",
               "urls": [
-                "https://github.com/dfinity/motoko-base/archive/refs/tags/moc-0.6.24.zip"
+                "https://github.com/dfinity/motoko-base/archive/refs/tags/moc-0.16.3.zip"
               ]
             }
           },
@@ -178,8 +178,8 @@
     },
     "@@rules_motoko+//motoko:extensions.bzl%motoko": {
       "general": {
-        "bzlTransitiveDigest": "jrSe/leImh1kG0Gl2ZtdCi9Nv/dQjyv69Q5Iog2vkXQ=",
-        "usagesDigest": "YQa7aHv3MZCKqp0zisE8dWWmllptoqUGMF8YKUZSANI=",
+        "bzlTransitiveDigest": "NXDxjdCuKoo81Rlbg3MRXOOsSE3S4chPdP48rj16Zy4=",
+        "usagesDigest": "MYRX+UZJfi+TLGjKDccbi19Pz6oLOohIefNtmuydD6Q=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -187,7 +187,7 @@
           "motoko_toolchain": {
             "repoRuleId": "@@rules_motoko+//motoko:repositories.bzl%_moc",
             "attributes": {
-              "motoko_version": "0.8.7"
+              "motoko_version": "0.16.3"
             }
           }
         },

@@ -11,10 +11,10 @@ def _examples_deps_impl(_module_ctx):
     http_archive(
         name = "motoko_base",
         build_file_content = BUILD_FILE_CONTENT,
-        sha256 = "582d1c90faa65047354ae7530f09160dd7e04882991287ced7ea7a72bd89d06e",
-        strip_prefix = "motoko-base-moc-0.6.24/src",
+        sha256 = "cdb7abfb280bffec3fb0200032d1e5c6f094f209a68219d3c82ce886b2339147",
+        strip_prefix = "motoko-base-moc-0.16.3/src",
         urls = [
-            "https://github.com/dfinity/motoko-base/archive/refs/tags/moc-0.6.24.zip",
+            "https://github.com/dfinity/motoko-base/archive/refs/tags/moc-0.16.3.zip",
         ],
     )
     http_archive(

@@ -1,13 +1,13 @@
 import Publisher "canister:pub";
 
-actor Subscriber {
+persistent actor Subscriber {
 
   type Counter = {
     topic : Text;
     value : Nat;
   };
 
-  var count: Nat = 0;
+  transient var count : Nat = 0;
 
   public func init(topic0 : Text) {
     Publisher.subscribe({
@@ -24,4 +24,3 @@ actor Subscriber {
     return count;
   };
 };
-

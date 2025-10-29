@@ -13,8 +13,12 @@ def _moc_impl(repository_ctx):
     if os_name not in MOC:
         fail("Unsupported operating system: " + os_name)
 
+    arch = repository_ctx.os.arch
+    if arch not in MOC[os_name]:
+        fail("Unsupported architecture: " + arch + " for OS: " + os_name)
+
     v = repository_ctx.attr.motoko_version
-    moc_versions = MOC[os_name]
+    moc_versions = MOC[os_name][arch]
     if v not in moc_versions:
         fail("Unsupported motoko version: " + v)
     asset = moc_versions[v]
