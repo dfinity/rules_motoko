@@ -14,8 +14,7 @@ If you're using Bazel 6+ with bzlmod, prefer declaring a module dependency inste
 bazel_dep(name = "rules_motoko", version = "<release>")
 
 motoko = use_extension("@rules_motoko//motoko:extensions.bzl", "motoko")
-motoko.toolchain(version = "0.8.7")
-use_repo(motoko, "motoko_toolchain")
+motoko.toolchain(version = "0.16.3")
 ```
 
 2) Load and use the rules in your BUILD files as usual (no WORKSPACE setup is required for the toolchain):

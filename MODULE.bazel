@@ -7,8 +7,6 @@ module(
 
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 
-# Create and map the Motoko toolchain repo for this ruleset so labels
-# like @motoko_toolchain resolve when consumed via bzlmod.
+# Use the extension to make @motoko_toolchain visible.
 motoko = use_extension("//motoko:extensions.bzl", "motoko")
-motoko.toolchain(version = "0.16.3")
 use_repo(motoko, "motoko_toolchain")

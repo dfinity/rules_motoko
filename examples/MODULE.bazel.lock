@@ -178,8 +178,8 @@
     },
     "@@rules_motoko+//motoko:extensions.bzl%motoko": {
       "general": {
-        "bzlTransitiveDigest": "NXDxjdCuKoo81Rlbg3MRXOOsSE3S4chPdP48rj16Zy4=",
-        "usagesDigest": "MYRX+UZJfi+TLGjKDccbi19Pz6oLOohIefNtmuydD6Q=",
+        "bzlTransitiveDigest": "rGIYvVzD9PXriLGSUk0EksPhjc8qJVFF98bD8QkqGu8=",
+        "usagesDigest": "WL1F5v6y8Be5/UrQXi9JqiWNC9YKOMyBdEGqiY3IJQ8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
