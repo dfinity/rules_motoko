@@ -143,7 +143,7 @@ motoko_package_aspect = aspect(
 )
 
 def _motoko_library_impl(ctx):
-    args = _collect_package_aliases(ctx)
+    args = ctx.attr.moc_flags + _collect_package_aliases(ctx)
 
     args.append("--check")
     args += [f.path for f in ctx.files.srcs]
@@ -195,6 +195,7 @@ def _motoko_binary_impl(ctx):
         out_didl = ctx.actions.declare_file(ctx.label.name + ".did")
 
     args = ctx.actions.args()
+    args.add_all(ctx.attr.moc_flags)
     args.add_all(pkg_args)
     args.add_all(["-o", out_wasm.path, "--idl", ctx.file.entry.path])
 
@@ -239,6 +240,7 @@ COMMON_ATTRS = {
     "srcs": attr.label_list(allow_files = MO_FILETYPES),
     "deps": attr.label_list(aspects = [motoko_package_aspect]),
     "_moc": MOC,
+    "moc_flags": attr.string_list(doc = "Additional flags to pass to the Motoko compiler."),
 }
 
 BIN_ATTRS = dict(COMMON_ATTRS.items() + {
