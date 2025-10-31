@@ -270,7 +270,7 @@ set -e
 # This means that the packages in `args` like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha"
 # will fail to resolve which is why we install a symlink from `external` to $RUNFILES_DIR in case `external` does not exists.
 if [ ! -d external ]; then ln -s "$RUNFILES_DIR" external; fi
-{moc_path} {args} -r {entry_path}
+exec {moc_path} {args} -r {entry_path}
 """.format(
         moc_path = moc.short_path,
         entry_path = ctx.file.entry.short_path,
