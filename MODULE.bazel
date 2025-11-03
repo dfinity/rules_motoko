@@ -1,0 +1,12 @@
+"""Bazel module definition for rules_motoko."""
+
+module(
+    name = "rules_motoko",
+    version = "1.0.0",
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+
+# Use the extension to make @motoko_toolchain visible.
+motoko = use_extension("//motoko:extensions.bzl", "motoko")
+use_repo(motoko, "motoko_toolchain")

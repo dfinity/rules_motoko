@@ -143,7 +143,7 @@ motoko_package_aspect = aspect(
 )
 
 def _motoko_library_impl(ctx):
-    args = _collect_package_aliases(ctx)
+    args = ctx.attr.moc_flags + _collect_package_aliases(ctx)
 
     args.append("--check")
     args += [f.path for f in ctx.files.srcs]
@@ -195,6 +195,7 @@ def _motoko_binary_impl(ctx):
         out_didl = ctx.actions.declare_file(ctx.label.name + ".did")
 
     args = ctx.actions.args()
+    args.add_all(ctx.attr.moc_flags)
     args.add_all(pkg_args)
     args.add_all(["-o", out_wasm.path, "--idl", ctx.file.entry.path])
 
@@ -229,7 +230,7 @@ def _motoko_binary_impl(ctx):
     ]
 
 MOC = attr.label(
-    default = Label("@build_bazel_rules_motoko_toolchain//:moc"),
+    default = Label("@motoko_toolchain//:moc"),
     executable = True,
     allow_single_file = True,
     cfg = "exec",
@@ -239,6 +240,7 @@ COMMON_ATTRS = {
     "srcs": attr.label_list(allow_files = MO_FILETYPES),
     "deps": attr.label_list(aspects = [motoko_package_aspect]),
     "_moc": MOC,
+    "moc_flags": attr.string_list(doc = "Additional flags to pass to the Motoko compiler."),
 }
 
 BIN_ATTRS = dict(COMMON_ATTRS.items() + {
@@ -260,9 +262,22 @@ def _motoko_test_impl(ctx):
 
     moc = ctx.executable._moc
 
-    script = " ".join([moc.path] + args + ["-r", ctx.file.entry.path])
+    script = """
+#!/bin/bash
+set -e
+# Bazel-8 disabled (https://github.com/bazelbuild/bazel/issues/23574) the --legacy_external_runfiles flag.
+# See: https://bazel.build/versions/7.6.0/reference/command-line-reference#flag--legacy_external_runfiles
+# This means that the packages in `args` like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha"
+# will fail to resolve which is why we install a symlink from `external` to $RUNFILES_DIR in case `external` does not exists.
+if [ ! -d external ]; then ln -s "$RUNFILES_DIR" external; fi
+exec {moc_path} {args} -r {entry_path}
+""".format(
+        moc_path = moc.short_path,
+        entry_path = ctx.file.entry.short_path,
+        args = " ".join(args),
+    )
 
-    ctx.actions.write(output = ctx.outputs.executable, content = script)
+    ctx.actions.write(output = ctx.outputs.executable, content = script, is_executable = True)
 
     files = depset(
         direct = ctx.files.srcs + [ctx.file.entry, moc],
@@ -293,7 +308,7 @@ def _external_actor_impl(ctx):
             principal = ctx.attr.principal,
             wasm = None,
             idl = ctx.file.idl,
-        )
+        ),
     ]
 
 external_actor = rule(
