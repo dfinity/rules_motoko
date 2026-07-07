@@ -1,4 +1,4 @@
-load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "motoko_library")
+load("@rules_motoko//motoko:defs.bzl", "motoko_binary", "motoko_library", "motoko_test")
 
 motoko_library(
     name = "core",
@@ -16,4 +16,10 @@ motoko_binary(
     name = "sub",
     entry = "Sub.mo",
     deps = [":pub"],
+)
+
+motoko_test(
+    name = "actors_test",
+    entry = "Test.mo",
+    deps = [":core"],
 )
