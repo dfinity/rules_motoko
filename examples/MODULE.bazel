@@ -13,7 +13,7 @@ local_path_override(module_name = "rules_motoko", path = "..")
 # Configure the Motoko toolchain version for examples.
 # Users can specify any available version here.
 motoko = use_extension("@rules_motoko//motoko:extensions.bzl", "motoko")
-motoko.toolchain(version = "0.16.3")
+motoko.toolchain(version = "1.11.0")
 
 # Bring in third-party Motoko libraries used by examples via a local module extension.
 examples_deps = use_extension("//:examples_deps.bzl", "examples_deps")
