@@ -17,4 +17,4 @@ motoko.toolchain(version = "1.11.0")
 
 # Bring in third-party Motoko libraries used by examples via a local module extension.
 examples_deps = use_extension("//:examples_deps.bzl", "examples_deps")
-use_repo(examples_deps, "motoko_base", "motoko_sha")
+use_repo(examples_deps, "motoko_core")

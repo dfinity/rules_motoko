@@ -9,14 +9,14 @@ persistent actor Subscriber {
 
   transient var count : Nat = 0;
 
-  public func init(topic0 : Text) {
+  public func init(topic0 : Text) : () {
     Publisher.subscribe({
       topic = topic0;
       callback = updateCount;
     });
   };
 
-  public func updateCount(counter : Counter) {
+  public func updateCount(counter : Counter) : () {
     count += counter.value;
   };
 

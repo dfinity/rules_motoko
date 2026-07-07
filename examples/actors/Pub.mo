@@ -1,4 +1,4 @@
-import Buffer "mo:base/Buffer";
+import List "mo:core/List";
 
 persistent actor Publisher {
 
@@ -12,14 +12,14 @@ persistent actor Publisher {
     callback : shared Counter -> ();
   };
 
-  transient var subscribers : Buffer.Buffer<Subscriber> = Buffer.Buffer<Subscriber>(0);
+  transient let subscribers = List.empty<Subscriber>();
 
-  public func subscribe(subscriber : Subscriber) {
-    subscribers.add(subscriber);
+  public func subscribe(subscriber : Subscriber) : () {
+    List.add(subscribers, subscriber);
   };
 
-  public func publish(counter : Counter) {
-    for (subscriber in subscribers.vals()) {
+  public func publish(counter : Counter) : () {
+    for (subscriber in List.values(subscribers)) {
       if (subscriber.topic == counter.topic) {
         subscriber.callback(counter);
       };

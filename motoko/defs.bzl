@@ -30,20 +30,28 @@ MotokoAliasesInfo = provider(
 )
 
 def _common_prefix(lhs, rhs):
-    if lhs == rhs:
-        return lhs
+    """Returns the longest common ancestor of two directory paths.
 
-    m = min(len(lhs), len(rhs))
-    p = m
+    Paths are compared component-wise (split on "/"), so when one path is a
+    prefix of the other the shorter path is returned unchanged (e.g. the common
+    ancestor of "a/b" and "a/b/c" is "a/b"). This keeps package roots intact for
+    libraries whose sources live in subdirectories.
+
+    Args:
+      lhs: A directory path.
+      rhs: A directory path.
+    Returns:
+      The longest common ancestor directory path.
+    """
+    lhs_comps = lhs.split("/")
+    rhs_comps = rhs.split("/")
+    m = min(len(lhs_comps), len(rhs_comps))
+    n = 0
     for i in range(0, m):
-        if lhs[i] != rhs[i]:
-            p = i
+        if lhs_comps[i] != rhs_comps[i]:
             break
-
-    p = lhs[0:p].rfind("/")
-    if p < 0:
-        return ""
-    return lhs[0:p].rstrip("/")
+        n = i + 1
+    return "/".join(lhs_comps[0:n])
 
 def _longest_common_dirname(ps):
     """Returns a path that is the longest common prefix of a sequence of paths.
@@ -66,6 +74,7 @@ def _lcd_test_impl(ctx):
     asserts.equals(env, "a/b", _longest_common_dirname(["a/b/c.mo", "a/b/d.mo"]))
     asserts.equals(env, "a", _longest_common_dirname(["a/b/c.mo", "a/c/d.mo"]))
     asserts.equals(env, "", _longest_common_dirname(["a/b/c.mo", "b/c/d.mo"]))
+    asserts.equals(env, "a/b", _longest_common_dirname(["a/b/c.mo", "a/b/sub/d.mo"]))
     return unittest.end(env)
 
 lcd_test = unittest.make(_lcd_test_impl)
@@ -267,7 +276,7 @@ def _motoko_test_impl(ctx):
 set -e
 # Bazel-8 disabled (https://github.com/bazelbuild/bazel/issues/23574) the --legacy_external_runfiles flag.
 # See: https://bazel.build/versions/7.6.0/reference/command-line-reference#flag--legacy_external_runfiles
-# This means that the packages in `args` like "--package base external/+examples_deps+motoko_base --package sha external/+examples_deps+motoko_sha"
+# This means that the packages in `args` like "--package core external/+examples_deps+motoko_core"
 # will fail to resolve which is why we install a symlink from `external` to $RUNFILES_DIR in case `external` does not exists.
 if [ ! -d external ]; then ln -s "$RUNFILES_DIR" external; fi
 exec {moc_path} {args} -r {entry_path}
